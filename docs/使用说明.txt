@@ -1,0 +1,46 @@
+SpektraLab Windows 版 —— 使用说明
+==================================
+
+程序来自开源项目 https://github.com/JamesQiu2005/SpektraLab （GPL-3.0-or-later）。
+
+【两种用法，任选其一】
+
+  方式 A：绿色便携（不动系统）
+      把整个文件夹解压到 C:\SpektraLab 这类位置，双击 spektralab.exe。
+
+  方式 B：安装到本机（推荐给不折腾的朋友）
+      解压后双击「安装.cmd」。
+      它会把程序装到 %LOCALAPPDATA%\SpektraLab，并在桌面和开始菜单建快捷方式。
+      不需要管理员权限，不写 Program Files，不改注册表。
+      卸载：运行安装目录里的「卸载.cmd」。
+
+【怎么用】
+1. 用上面任意一种方式启动。
+2. 把 RAW 文件拖进窗口，或用菜单打开照片。
+3. 左侧选胶片与相纸，右侧调参数，导出在右侧「导出」页。
+
+【需要什么环境】
+- Windows 10 / 11，64 位
+- 显卡需要支持 Vulkan（NVIDIA / AMD / Intel 近几年的卡都支持）。
+  启动时会自动检测；日志在 %LOCALAPPDATA%\app.spektralab.desktop\logs
+- Microsoft Edge WebView2 Runtime：Win10/11 一般已自带；
+  缺失时窗口起不来，可从 https://developer.microsoft.com/microsoft-edge/webview2/ 安装
+
+【第一次启动会被拦】
+exe 没有代码签名，SmartScreen 会提示"Windows 已保护你的电脑"。
+点"更多信息"→"仍要运行"。这不是病毒，是未签名程序的默认提示。
+
+【注意：不要解压到某些特殊目录】
+如果目录带有 Everyone:(DENY)(DC) 这类"拒绝删除子项"的 ACL，
+程序会启动失败（os error 5 / 0x800700AA / 0x8000FFFF）。
+用户目录、C:\ 或 D:\ 下自建的普通文件夹不会有这个问题。
+
+【功能范围】
+- 21 种彩色负片/反转/电影卷 + 4 种黑白 + 9 种相纸
+- 片边（Frame Edge）、日期背印（Date Back）、半格对、导出配方
+- 已知限制：Nikon HE / HE* 格式 RAW 不支持；对比度蒙版未开放（macOS 版同样隐藏）
+- 本包不含命令行工具（spektralab-cli）；需要的话用完整版
+
+【许可证】
+本包内含 GPL-3.0 程序与 CC BY-SA 4.0 的胶片/相纸测量数据。
+完整许可证在 host\licenses\ 下。源代码获取方式见 SOURCE.txt。

@@ -1,0 +1,47 @@
+SpektraLab 完全自建版（Windows x64）
+====================================
+
+提交：JamesQiu2005/SpektraLab 分支 Windows_Linux @ aaec952811d75d8f1ae3545adb7c988309beeb89（2026-11-03）
+
+【全部由本机源码编译】
+  spektralab.exe        Tauri 2.12 外壳（Rust 1.99.1 x86_64-pc-windows-gnu + React 19 / Vite 7）
+  spektralab-host.exe   引擎宿主（19.3 MB），链接自编的引擎库、LibRaw、OpenEXR、libheif、
+                        LittleCMS、Lensfun、GLib
+  host\engine\          引擎资源 157 个文件（profiles / SPIR-V / ICC / 字体 / Lensfun 数据库）
+
+【验证结果】
+  引擎与宿主 CTest        45/45 通过（含 spk_vulkan_overscan / scene_latitude / pair / bw /
+                          imprint_raster / spk_host_lens / spk_host_codecs / spk_host_inputs）
+  前端                    typecheck 0、lint 0、vitest 423 通过
+  端到端                  单实例转发打开照片（decode 18 ms、首帧约 1 s）
+                          外部 CLI 改参 → 窗口在同一秒重新打开该帧（无用户操作）
+
+【借用官方包的部分（非自建）】
+  agents\                Node 24 运行时 + agent.mjs（命令行与 MCP）
+  WebView2Loader.dll     Microsoft WebView2 载入器
+  host\licenses\         许可证文本
+
+【工具链（免管理员，全在用户目录）】
+  GCC 16.2.0 (w64devkit 2.11) / CMake 4.4.4 / Ninja 1.13 / glslang 16.6.0（源码自建）
+  Rust 1.99.1 gnu / Node v24.15.0 / Meson 1.12.1
+
+【为编通 GLib 做的本地处理（需知情）】
+  GLib 2.86.5 用 Meson 构建，上游要求从 wrapdb 取 zlib/pcre2 补丁包，而 wrapdb 在本机不可达。
+  处理方式：
+    - zlib 1.3.1 与 pcre2 10.44 用 CMake 自行构建并安装到同一前缀
+    - libffi 用 meson 从 gitlab 拉取（pin 83d0cfd）
+    - proxy-libintl 放入 glib/subprojects/proxy-libintl（pin 33934de）
+    - 补造 libz.a（CMake 只产出 libzlibstatic.a）
+  另外 engine/setup-codecs.ps1 中 libpng-1.6.59 的哈希被换为 GitHub tag 归档的哈希
+  （sourceforge 在本网络只返回 HTML 中间页）。
+
+【运行】
+  双击 spektralab.exe；命令行用 spektralab-cli.cmd status
+  目录名可以是中文（已在干净中文目录实测）。
+  但不要放在带 Everyone:(DENY)(DC) 的目录里：WebView2 建环境会失败，
+  错误码在 os error 5 / 0x800700AA / 0x8000FFFF 之间漂移。
+  本机 C:\Users\steve\Desktop\胶片模拟程序 就带这条继承 ACL。
+
+【已知限制】
+  contrast_mask 仍被引擎拒绝（macOS 版同样隐藏）；Nikon HE/HE* 不支持；
+  Intel Arc 上 fma residual 与 Metal 参考差 1e-11 量级（上游声明过的边界）。
